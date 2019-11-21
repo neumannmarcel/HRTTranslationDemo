@@ -36,8 +36,37 @@ function main(params) {
   return new Promise(function (resolve, reject) {
 
     try {
+const languageTranslator = new LanguageTranslatorV3({
+  version: '2018-05-01',
+  authenticator: new IamAuthenticator({
+    apikey: 'rboxmj20W_OgkwHl7HPqEaDWnEdsvR5MDeBdl-qPTdhd',
+  }),
+  url: 'https://gateway-fra.watsonplatform.net/language-translator/api',
+});
 
-      // *******TODO**********
+const translateParams = {
+  text: params.text,
+  modelId: params.language + '-en',
+};
+
+languageTranslator.translate(translateParams)
+  .then(translationResult => {
+    
+  resolve({
+    statusCode: 200,
+    body: {
+      translation: translationResult.result.translations[0].translation
+    },
+    headers: { 'Content-Type': 'application/json' }
+});
+  })
+  .catch(err => {
+    resolve({
+      statusCode: 200,
+      body:  params.text,
+      headers: { 'Content-Type': 'application/json' }
+  });
+  });
       // - Call the language translation API of the translation service
       // see: https://cloud.ibm.com/apidocs/language-translator?code=node#translate
       // - if successful, resolve exatly like shown below with the
@@ -49,15 +78,7 @@ function main(params) {
       // found in the catch clause below
 
       // pick the language with the highest confidence, and send it back
-      resolve({
-        statusCode: 200,
-        body: {
-          translations: "<translated text>",
-          words: 1,
-          characters: 11,
-        },
-        headers: { 'Content-Type': 'application/json' }
-      });
+      
          
     } catch (err) {
       console.error('Error while initializing the AI service', err);
